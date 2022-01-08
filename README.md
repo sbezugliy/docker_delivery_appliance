@@ -40,10 +40,48 @@ docker_delivery_appliance-redis-1            "docker-entrypoint.s…"   redis   
 
 > Staging uses separate database, due to prodution database maybe too large for development machine. So if required to use data from production or similar layout define credentials of staging database from cloud providers, etc...
 
+> Docker images for application services built as multi-stage images, which will be attached to the stack service by target mark:
+
+`./docker-appliance/dockerfiles/backend.Dockerfile`
+```Dockerfile
+# Base image target. Common build actions for each environments.
+FROM ruby:3.1.0-alpine3.15 as build_base
+
+# Development target.
+# Includes development application environment and tools.
+# Volumes are attached as a local folders, accessible from the
+# development host machine.
+# Runs development server.
+FROM build_base as development
+
+# Test target.
+# Includes test application environment and tools.
+# Volumes are attached as a local folders, accessible from the
+# development host machine.
+# Runs test suite in autotesting mode triggered by filechange watcher,
+# also runs code linting before each test run.
+FROM development as test
+
+# Staging -> Production target.
+# Includes development application environment and tools.
+# Assets are compiled and stored to public folder.
+# Static code is compiled too and stored to folders for execution.
+# Volumes contents copied to the image, codebase minimized, uglified, cleaned
+# from development tools, debuggers, testing tools and other development
+# artifacts.
+# Secrets are hashed and all development environment variables removed
+# or nullified. So, runtime environment variables should be provided
+# from docker-swarm or kubernetes at boot time.
+# Runs production server, which ready to receive connections from
+# load-balancer or reverse proxy server.
+FROM build_base as production
+
+```
+> Similar scenario implemented for frontend image at `./docker-appliance/dockerfiles/frontend.Dockerfile`
+
 ## Requirements
 - docker
 - docker-compose
--
 
 ## Installation
 
