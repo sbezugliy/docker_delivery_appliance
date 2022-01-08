@@ -44,15 +44,15 @@ docker_delivery_appliance-redis-1            "docker-entrypoint.s…"   redis   
 
 `./docker-appliance/dockerfiles/backend.Dockerfile`
 ```Dockerfile
-# Base image target. Common build actions for each environments.
-FROM ruby:3.1.0-alpine3.15 as build_base
+# Base image target. Common build actions for each environment.
+FROM ruby:3.1.0-alpine3.15 AS build_base
 
 # Development target.
 # Includes development application environment and tools.
 # Volumes are attached as a local folders, accessible from the
 # development host machine.
 # Runs development server.
-FROM build_base as development
+FROM build_base AS development
 
 # Test target.
 # Includes test application environment and tools.
@@ -60,7 +60,7 @@ FROM build_base as development
 # development host machine.
 # Runs test suite in autotesting mode triggered by filechange watcher,
 # also runs code linting before each test run.
-FROM development as test
+FROM development AS test
 
 # Staging -> Production target.
 # Includes development application environment and tools.
@@ -74,7 +74,7 @@ FROM development as test
 # from docker-swarm or kubernetes at boot time.
 # Runs production server, which ready to receive connections from
 # load-balancer or reverse proxy server.
-FROM build_base as production
+FROM build_base AS production
 
 ```
 > Similar scenario implemented for frontend image at `./docker-appliance/dockerfiles/frontend.Dockerfile`
