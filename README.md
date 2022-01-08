@@ -6,11 +6,11 @@ Current appliance provides docker-compose service stack for ruby 3.10 and node.j
 
 > Current appliance implements development, testing, building environment for next delivery scheme:
 
-| Stage #:      | Stage         | Stage 2    | Stage 3    | Stage 4      |
-|---------------|---------------|------------|------------|--------------|
-| **Behavior:** | _Runnable_    | _Runnable_ | _Runnable_ | _Deployable_ |
-| **Stage:**    | Development   | Test       | Staging    | Production   |
-| **Image tag** | **dev**       | **test**   | **stage**  | **latest**   |
+| Stage #:         | Stage 1     | Stage 2    | Stage 3    | Stage 4      |
+|------------------|-------------|------------|------------|--------------|
+| **Behavior:**    | _Runnable_  | _Runnable_ | _Runnable_ | _Deployable_ |
+| **Environment:** | Development | Test       | Staging    | Production   |
+| **Image tag**    | **dev**     | **test**   | **stage**  | **latest**   |
 
 > Appliance builds image and service for **every** stage. As example if thereis application of two parts: **backend** and **frontend**, then as result we are will have:
   * 8 sets of application images, containers and services
@@ -38,9 +38,12 @@ docker_delivery_appliance-redis-1            "docker-entrypoint.s…"   redis   
 
 > Service for production environment present to simplify building of the production-ready deliverable image, set **latest** tag and other required labels. But it is not a good idea to run it at development machine.
 
+> Staging uses separate database, due to prodution database maybe too large for development machine. So if required to use data from production or similar layout define credentials of staging database from cloud providers, etc...
+
 ## Requirements
 - docker
 - docker-compose
+-
 
 ## Installation
 
@@ -51,7 +54,7 @@ $ cp <your ruby backend app folder> ./apps/backend
 $ cp <your node-js frontend app folder> ./apps/backend
 ```
 ## Configuring
-### Customizing services stack
+### 1. Customizing services
 To exclude some services or stage from the stack just comment out or remove section at the docker-compose.yml file, as the example(excluding 'frontend staging'):
 
 ```YAML
@@ -75,40 +78,83 @@ services:
 # ...
 ```
 
-### Application
-* Copy ruby backend application to the `./apps/backend`
-* Copy node.js application to the `./apps/frontend`
+#### 2. Copy files of application services
+* Review example applications at directories inside of `./apps/`. Pay attention to next points:
+  * Development and test application environments starting-up using `guard` gem. Review `groups` and `guards` at the  `Guardfile`.
+  * Review set of gems(`rspec` and plugins) for testing at the `Gemfile`.
+  * Review set of gems(`rubocop` and styleguide plugins) for code quality checks and linting
+  * Staging and production designed to work behind of load balancing proxy as `haproxy` or the reverse proxy, such as `nginx`. Do not forgot to configure required path mappings and streaming channels.
+* Remove example applications and copy contents of yours:
+  * Copy ruby backend application to the `./apps/backend/`
+  * Copy node.js application to the `./apps/frontend/`
 
-### Environment variables
-Configure environment variables of each stage and service.
+#### 3. Define environment variables
+Rename `<environment>.env.example` files as `<environment>.env` at directories:
+  * `./env/frontend/`
+  * `./env/backend/`
+  * `./env/databases/`
 
-Environment variables defined inside of env files at next paths:\
-* `./env/frontend/<stage_name>.env`
-* `./env/backend/<stage_name>.env`
-* `./env/databases/<database_service_name>.env`
+Change default values of environment variables for docker services, explanations are in next sections. Also addict it with your values.
 
-> Environment files of databases are common with backend services.
+##### 3.1. Databases
 
-### Dockerfiles of the services
+> * Environment files of databases are common with backend services. Be carefull  when sharing it with frontend.
+* Redis connection string better to define separately at the `frontend.env`. Review securing of redis database.
+
+
+  >`./env/databases/postgres.env`
+  ```
+  ```
+  >`./env/databases/redis.env`
+  ```
+  ```
+##### 3.2. Frontend
+  >`./env/frontend/development.env`
+  ```
+  ```
+  >`./env/frontend/test.env`
+  ```
+  ```
+  >`./env/frontend/staging.env`
+  ```
+  ```
+  >`./env/frontend/production.env`
+  ```
+  ```
+
+##### 3.3. Backend
+  >`./env/backend/development.env`
+  ```
+  ```
+  >`./env/backend/test.env`
+  ```
+  ```
+  >`./env/backend/staging.env`
+  ```
+  ```
+  >`./env/backend/production.env`
+  ```
+  ```
+
+#### 4. Review and complete build actions at Dockerfiles of services
 Fill out Docker files with required actions to build application
 
 Dockerfiles are here `./dockerfiles/<app_part_name>.Dockerfile`
 
 > To exclude some files from docker processing scope use dockerignore files: `./dockerfiles/<app_part_name>.Dockerfile.dockerignore`
 
->Don't forget that you are working under docker context wich moved to the application directory.
+>Don't forget that you are working inside of docker context and working directory moved to the application directory.
 
-### Entrypoints
+#### 5. Complete startup actions at entrypoint scripts
 Replace or create entrypoint scripts of the container.
-> Scripts of entrypoints of applications present at the next path:\
-`./sbin/<service_name>_<stage_name>`docker-appliance/services/development.yml
+> Entrypoint scripts of applications present at the next path:\
+`./sbin/<service_name>_<stage_name>`
 
-### Configure network port mapping at the ./services/<stage>.yml
+#### 6. Configure network port mapping of services
+Path to service files is ./services/\<environment_name\>.yml
 
-
-
-
-As example exposing port for backend development, at the file `docker-appliance/services/development.yml`:
+As example, exposing(mapping) TCP port of backend server from 3000 to 80 of the host, at the file\
+`docker-appliance/services/development.yml`:
 
 ```YAML
 ---
