@@ -78,7 +78,7 @@ services:
 # ...
 ```
 
-#### 2. Copy files of application services
+### 2. Copy files of application services
 * Review example applications at directories inside of `./apps/`. Pay attention to next points:
   * Development and test application environments starting-up using `guard` gem. Review `groups` and `guards` at the  `Guardfile`.
   * Review set of gems(`rspec` and plugins) for testing at the `Gemfile`.
@@ -88,7 +88,7 @@ services:
   * Copy ruby backend application to the `./apps/backend/`
   * Copy node.js application to the `./apps/frontend/`
 
-#### 3. Define environment variables
+### 3. Define environment variables
 Rename `<environment>.env.example` files as `<environment>.env` at directories:
   * `./env/frontend/`
   * `./env/backend/`
@@ -96,10 +96,10 @@ Rename `<environment>.env.example` files as `<environment>.env` at directories:
 
 Change default values of environment variables for docker services, explanations are in next sections. Also addict it with your values.
 
-##### 3.1. Databases
+#### 3.1. Databases
 
 > * Environment files of databases are common with backend services. Be carefull  when sharing it with frontend.
-* Redis connection string better to define separately at the `frontend.env`. Review securing of redis database.
+> * Redis connection string better to define separately at the `frontend.env`. Review securing of redis database.
 
 
   >`./env/databases/postgres.env`
@@ -108,7 +108,7 @@ Change default values of environment variables for docker services, explanations
   >`./env/databases/redis.env`
   ```
   ```
-##### 3.2. Frontend
+#### 3.2. Frontend
   >`./env/frontend/development.env`
   ```
   ```
@@ -122,7 +122,7 @@ Change default values of environment variables for docker services, explanations
   ```
   ```
 
-##### 3.3. Backend
+#### 3.3. Backend
   >`./env/backend/development.env`
   ```
   ```
@@ -136,7 +136,7 @@ Change default values of environment variables for docker services, explanations
   ```
   ```
 
-#### 4. Review and complete build actions at Dockerfiles of services
+### 4. Review and complete build actions at Dockerfiles of services
 Fill out Docker files with required actions to build application
 
 Dockerfiles are here `./dockerfiles/<app_part_name>.Dockerfile`
@@ -145,13 +145,13 @@ Dockerfiles are here `./dockerfiles/<app_part_name>.Dockerfile`
 
 >Don't forget that you are working inside of docker context and working directory moved to the application directory.
 
-#### 5. Complete startup actions at entrypoint scripts
+### 5. Complete startup actions at entrypoint scripts
 Replace or create entrypoint scripts of the container.
 > Entrypoint scripts of applications present at the next path:\
 `./sbin/<service_name>_<stage_name>`
 
-#### 6. Configure network port mapping of services
-Path to service files is ./services/\<environment_name\>.yml
+### 6. Configure network port mapping of services
+Path to service files is `./services/<environment_name>.yml`
 
 As example, exposing(mapping) TCP port of backend server from 3000 to 80 of the host, at the file\
 `docker-appliance/services/development.yml`:
@@ -188,7 +188,9 @@ services:
 
 ```
 
-### Running
+## Running
+
+Execute. Production services will not start, but may be rebuilt from staging image.
 
 ```
 $ docker-compose up
