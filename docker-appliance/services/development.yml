@@ -1,0 +1,26 @@
+---
+services:
+  frontend:
+    image: frontend:dev
+    env_file:
+      - ../env/frontend/development.env
+    build:
+      context: ../../apps/frontend/
+      dockerfile: ../dockerfiles/frontend.Dockerfile
+      target: development
+    entrypoint: ["sbin", "frontend_dev"]
+    networks:
+      - dev
+  backend:
+    image: backend:dev
+    env_file:
+      - ../env/development.env
+      - ../env/postgres.env
+      - ../env/redis.env
+    build:
+      context: ../../apps/backend/
+      dockerfile: ../dockerfiles/backend.Dockerfile
+      target: development
+    entrypoint: ["sbin", "backend_dev"]
+    networks:
+      - dev

@@ -1,0 +1,26 @@
+---
+services:
+  frontend:
+    image: frontend:staging
+    env_file:
+      - ../env/stage.env
+      - ../env/storage.env
+    build:
+      context: ../../apps/frontend/
+      dockerfile: ../dockerfiles/frontend.Dockerfile
+      target: production
+    entrypoint: ["sbin", "frontend_prod"]
+    networks:
+      - stage
+  backend:
+    image: backend:staging
+    env_file:
+      - ../env/stage.env
+      - ../env/storage.env
+    build:
+      context: ../../apps/backend/
+      dockerfile: ../dockerfiles/backend.Dockerfile
+      target: production
+    entrypoint: ["sbin", "backend_prod"]
+    networks:
+      - stage

@@ -1,0 +1,72 @@
+version: "3.9"
+services:
+  frontend-prod:
+    extends:
+      file: ./docker-appliance/services/production.yml
+      service: frontend
+    depends_on:
+      - backend-prod
+      - redis
+  backend-prod:
+    extends:
+      file: ./docker-appliance/services/production.yml
+      service: backend
+    depends_on:
+      - postgres
+      - redis
+  frontend-stage:
+    extends:
+      file: ./docker-appliance/services/staging.yml
+      service: frontend
+    depends_on:
+      - backend-stage
+      - redis
+  backend-stage:
+    extends:
+      file: ./docker-appliance/services/staging.yml
+      service: backend
+    depends_on:
+      - postgres
+      - redis
+  frontend-dev:
+    extends:
+      file: ./docker-appliance/services/development.yml
+      service: frontend
+    depends_on:
+      - backend-dev
+      - redis
+  backend-dev:
+    extends:
+      file: ./docker-appliance/services/development.yml
+      service: backend
+    depends_on:
+      - postgres
+      - redis
+  frontend-test:
+    extends:
+      file: ./docker-appliance/services/test.yml
+      service: frontend
+    depends_on:
+      - backend-test
+      - redis
+  backend-test:
+    extends:
+      file: ./docker-appliance/services/test.yml
+      service: backend
+    depends_on:
+      - postgres
+      - redis
+  redis:
+    extends:
+      file: ./docker-appliance/services/storage.yml
+      service: redis
+  postgres:
+    extends:
+      file: ./docker-appliance/services/storage.yml
+      service: postgres
+
+networks:
+  dev:
+  test:
+  stage:
+  prod:

@@ -1,0 +1,2 @@
+#!/bin/bash
+/home/sergey/.asdf/installs/postgres/14.1/bin/pg_ctl -D /home/sergey/.asdf/installs/postgres/14.1/data -l ./log/postgres.log start

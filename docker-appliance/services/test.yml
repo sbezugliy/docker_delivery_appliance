@@ -1,0 +1,26 @@
+---
+services:
+  frontend:
+    image: frontend:test
+    env_file:
+      - ../env/test.env
+      - ../env/storage.env
+    build:
+      context: ../../apps/frontend/
+      dockerfile: ../dockerfiles/frontend.Dockerfile
+      target: test
+    entrypoint: ["sbin", "frontend_test"]
+    networks:
+      - test
+  backend:
+    image: backend:test
+    env_file:
+      - ../env/test.env
+      - ../env/storage.env
+    build:
+      context: ../../apps/backend/
+      dockerfile: ../dockerfiles/backend.Dockerfile
+      target: test
+    entrypoint: ["sbin", "backend_test"]
+    networks:
+      - test
