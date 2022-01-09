@@ -40,6 +40,4 @@ apps/backend/.yarn-integrity
 data/postgres/**
 data/redis/**
 
-docker-appliance/env/databases/*.env
-docker-appliance/env/backend/*.env
-docker-appliance/env/frontend/*.env
+docker-appliance/env/**/*.env
