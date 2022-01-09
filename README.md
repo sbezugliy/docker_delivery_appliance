@@ -1,8 +1,8 @@
 # Docker Delivery-ready appliance
 
-## Overview
-
-Current appliance provides docker-compose service stack for ruby 3.10 and node.js LTS(currently 16.0). Main goal is to use docker original tools without using of shell scripting and additional software.
+## 1. Overview
+### 1.1 Environment
+Current appliance provides docker-compose service stack for ruby 3.10 and node.js LTS(currently 16.0).
 
 > Current appliance implements development, testing, building environment for next delivery scheme:
 
@@ -34,18 +34,21 @@ docker_delivery_appliance-redis-1            "docker-entrypoint.s…"   redis   
 
 > Each Stage connected to the own network. So implemented 4 networks: **dev**, **test**, **stage**, **prod**.
 
-> Database services connected to all networks, so every environments stored inside one database instance.
+> Database services are connected to all networks, so every environments stored inside one database instance.
 
 > Service for production environment present to simplify building of the production-ready deliverable image, set **latest** tag and other required labels. But it is not a good idea to run it at development machine.
 
 > Staging uses separate database, due to prodution database maybe too large for development machine. So if required to use data from production or similar layout define credentials of staging database from cloud providers, etc...
-
+### 1.2. Image runtime environments
 > Docker images for application services built as multi-stage images, which will be attached to the stack service by target mark:
 
+#### 1.2.1. Backend runtime images
 `./docker-appliance/dockerfiles/backend.Dockerfile`
 ```Dockerfile
 # Base image target. Common build actions for each environment.
-FROM ruby:3.1.0-alpine3.15 AS build_base
+# There is used 3.1.0(currently latest) ruby version. To use earlier version,
+# chang its value and rebuild service.
+FROM ruby:3.1.0-alpine AS build_base
 
 # Development target.
 # Includes development application environment and tools.
@@ -77,13 +80,14 @@ FROM development AS test
 FROM build_base AS production
 
 ```
-> Similar scenario implemented for frontend image at `./docker-appliance/dockerfiles/frontend.Dockerfile`
+#### 1.2.2. Frontend runtime images
+> Similar scenario implemented for frontend image at `./docker-appliance/dockerfiles/frontend.Dockerfile
 
-## Requirements
+## 2. Requirements
 - docker
 - docker-compose
 
-## Installation
+## 3. Installation
 
 ```
 $ git clone https://github.com/sbezugliy/docker_delivery_appliance.git
@@ -91,8 +95,8 @@ $ cd docker_delivery_appliance
 $ cp <your ruby backend app folder> ./apps/backend
 $ cp <your node-js frontend app folder> ./apps/backend
 ```
-## Configuring
-### 1. Customizing services
+## 4. Configuring
+### 4.1. Customizing services
 To exclude some services or stage from the stack just comment out or remove section at the docker-compose.yml file, as the example(excluding 'frontend staging'):
 
 ```YAML
@@ -116,7 +120,7 @@ services:
 # ...
 ```
 
-### 2. Copy files of application services
+### 4.2. Copy files of application services
 * Review example applications at directories inside of `./apps/`. Pay attention to next points:
   * Development and test application environments starting-up using `guard` gem. Review `groups` and `guards` at the  `Guardfile`.
   * Review set of gems(`rspec` and plugins) for testing at the `Gemfile`.
@@ -126,7 +130,7 @@ services:
   * Copy ruby backend application to the `./apps/backend/`
   * Copy node.js application to the `./apps/frontend/`
 
-### 3. Define environment variables
+### 4.3. Define environment variables
 Rename `<environment>.env.example` files as `<environment>.env` at directories:
   * `./env/frontend/`
   * `./env/backend/`
@@ -134,19 +138,23 @@ Rename `<environment>.env.example` files as `<environment>.env` at directories:
 
 Change default values of environment variables for docker services, explanations are in next sections. Also addict it with your values.
 
-#### 3.1. Databases
+#### 4.3.1. Databases
 
 > * Environment files of databases are common with backend services. Be carefull  when sharing it with frontend.
 > * Redis connection string better to define separately at the `frontend.env`. Review securing of redis database.
-
-
+##### 4.3.1.1 PostgreSQL
+  Initial database superuser credentials. Credentials for application database user will be created in the appilcation image build time.
   >`./env/databases/postgres.env`
+  ```sh
+  POSTGRES_USER=postgres # Default postgress superuser
+  POSTGRES_DB=postgres # Default system database name
+  POSTGRES_PASSWORD=some_secure_secret_password # Secure superuser password
   ```
-  ```
+##### 4.3.1.2 Redis
   >`./env/databases/redis.env`
   ```
   ```
-#### 3.2. Frontend
+#### 4.3.2. Frontend
   >`./env/frontend/development.env`
   ```
   ```
@@ -160,7 +168,7 @@ Change default values of environment variables for docker services, explanations
   ```
   ```
 
-#### 3.3. Backend
+#### 4.3.3. Backend
   >`./env/backend/development.env`
   ```
   ```
@@ -174,7 +182,7 @@ Change default values of environment variables for docker services, explanations
   ```
   ```
 
-### 4. Review and complete build actions at Dockerfiles of services
+### 4.4. Review and complete build actions at Dockerfiles of services
 Fill out Docker files with required actions to build application
 
 Dockerfiles are here `./dockerfiles/<app_part_name>.Dockerfile`
@@ -183,12 +191,12 @@ Dockerfiles are here `./dockerfiles/<app_part_name>.Dockerfile`
 
 >Don't forget that you are working inside of docker context and working directory moved to the application directory.
 
-### 5. Complete startup actions at entrypoint scripts
+### 4.5. Complete startup actions at entrypoint scripts
 Replace or create entrypoint scripts of the container.
 > Entrypoint scripts of applications present at the next path:\
 `./sbin/<service_name>_<stage_name>`
 
-### 6. Configure network port mapping of services
+### 4.6. Configure network port mapping of services
 Path to service files is `./services/<environment_name>.yml`
 
 As example, exposing(mapping) TCP port of backend server from 3000 to 80 of the host, at the file\
@@ -226,7 +234,7 @@ services:
 
 ```
 
-## Running
+## 5. Running
 
 Execute. Production services will not start, but may be rebuilt from staging image.
 
