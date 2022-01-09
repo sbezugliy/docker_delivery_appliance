@@ -1,0 +1,3 @@
+[submodule "rails_trestle_blog"]
+	path = apps/backend
+	url = git@github.com:sbezugliy/rails_trestle_blog.git
