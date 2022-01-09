@@ -58,11 +58,11 @@ services:
       - redis
   redis:
     extends:
-      file: ./docker-appliance/services/storage.yml
+      file: ./docker-appliance/services/databases.yml
       service: redis
   postgres:
     extends:
-      file: ./docker-appliance/services/storage.yml
+      file: ./docker-appliance/services/databases.yml
       service: postgres
 
 networks:

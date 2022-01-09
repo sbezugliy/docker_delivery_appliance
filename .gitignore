@@ -1,0 +1,6 @@
+# Ignore containers local volumes
+data/postgres/**
+data/redis/**
+
+# Ignore dotenv files
+docker-appliance/env/**/*.env

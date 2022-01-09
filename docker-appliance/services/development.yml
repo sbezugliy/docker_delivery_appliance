@@ -14,9 +14,9 @@ services:
   backend:
     image: backend:dev
     env_file:
-      - ../env/development.env
-      - ../env/postgres.env
-      - ../env/redis.env
+      - ../env/backend/development.env
+      - ../env/databases/postgres.env
+      - ../env/databases/redis.env
     build:
       context: ../../apps/backend/
       dockerfile: ../dockerfiles/backend.Dockerfile
