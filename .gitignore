@@ -41,4 +41,6 @@ a# See https://help.github.com/articles/ignoring-files for more about ignoring f
 
 /data/postgress/*
 /data/redis/*
-/env/databases/*.env
+/docker-appliance/env/databases/*.env
+/docker-appliance/env/backend/*.env
+/docker-appliance/env/frontend/*.env
