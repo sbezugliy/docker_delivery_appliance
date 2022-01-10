@@ -1,4 +1,4 @@
-FROM ruby:3.1.0-alpine3.15 as build_base
+FROM ruby:3.1.0-alpine as build_base
 
 RUN apk update && apk add bash \
 wget git build-base alpine-sdk \

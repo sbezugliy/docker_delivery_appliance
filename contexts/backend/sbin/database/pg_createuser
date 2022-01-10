@@ -1,13 +1,15 @@
+GNU nano 5.9                                                                               /usr/local/sbin/pg_createuser
 #!/bin/bash
 
 # ToDo: Create non-superuser role, granting rights to create roles, databases, extensions, views, triggers, etc...
 # Creates PostgreSQL backand databasev user
 # PG_BACKEND_USER=blog_pg_user
 # PG_BACKEND_PASS=9cbf701ba2003416785fc0475c6f1ab80f74b204
-PGPASSWORD=$POSTGRES_PASSWORD psql -h "$POSTGRES_HOST" -p $POSTGRES_PORT -d $POSTGRES_DB -U $POSTGRES_USER --echo \
--c "DO
-$do$
-BEGIN
+PGPASSWORD=$POSTGRES_PASSWORD psql --host "$POSTGRES_HOST" --port "$POSTGRES_PORT" --dbname "$POSTGRES_DB" -U "$POSTGRES_USER" --echo-queries -c "
+DO
+  \$\$
+  DECLARE;
+  BEGIN
     IF NOT EXISTS (
         SELECT FROM pg_catalog.pg_roles WHERE rolname=\"$PG_BACKEND_USER\"
     ) THEN
@@ -15,5 +17,5 @@ BEGIN
     ELSE
         ALTER USER \"$PG_BACKEND_USER\" WITH PASSWORD \"$PG_BACKEND_PASS\";
     END IF;
-END
-$do$;"
+  END;
+\$\$;"

@@ -43,12 +43,14 @@ docker_delivery_appliance-redis-1            "docker-entrypoint.s…"   redis   
 > Docker images for application services built as multi-stage images, which will be attached to the stack service by target mark:
 
 #### 1.2.1. Backend runtime images
-`./docker-appliance/dockerfiles/backend.Dockerfile`
+`/docker-appliance/dockerfiles/backend.Dockerfile`
 ```Dockerfile
 # Base image target. Common build actions for each environment.
 # There is used 3.1.0(currently latest) ruby version. To use earlier version,
 # chang its value and rebuild service.
 FROM ruby:3.1.0-alpine AS build_base
+
+# ... Some actions
 
 # Development target.
 # Includes development application environment and tools.
@@ -57,6 +59,8 @@ FROM ruby:3.1.0-alpine AS build_base
 # Runs development server.
 FROM build_base AS development
 
+# ... Some actions
+
 # Test target.
 # Includes test application environment and tools.
 # Volumes are attached as a local folders, accessible from the
@@ -64,6 +68,8 @@ FROM build_base AS development
 # Runs test suite in autotesting mode triggered by filechange watcher,
 # also runs code linting before each test run.
 FROM development AS test
+
+# ... Some actions
 
 # Staging -> Production target.
 # Includes development application environment and tools.
@@ -79,6 +85,8 @@ FROM development AS test
 # load-balancer or reverse proxy server.
 FROM build_base AS production
 
+# ... Some actions
+
 ```
 #### 1.2.2. Frontend runtime images
 > Similar scenario implemented for frontend image at `./docker-appliance/dockerfiles/frontend.Dockerfile
@@ -93,9 +101,15 @@ FROM build_base AS production
 ```
 $ git clone https://github.com/sbezugliy/docker_delivery_appliance.git
 $ cd docker_delivery_appliance
-$ cp <your ruby backend app folder> ./apps/backend
-$ cp <your node-js frontend app folder> ./apps/backend
 ```
+> Do actions from section **4. Configuring**
+
+> Replace contents of a backend app at the `/contexts/backend/app`
+
+> Replace contents of a frontend app at the `/contexts/frontend/app`
+
+> Run required services as described at the section **6. Running services**
+
 ## 4. Configuring
 ### 4.1. Customizing services
 To exclude some services or stage from the stack just comment out or remove section at the docker-compose.yml file, as the example(excluding 'frontend staging'):
@@ -122,86 +136,89 @@ services:
 ```
 
 ### 4.2. Copy files of application services
-* Review example applications at directories inside of `./apps/`. Pay attention to next points:
+* Review example applications at directories inside of `/contexts/<context_name>`. Pay attention to next points:
   * Development and test application environments starting-up using `guard` gem. Review `groups` and `guards` at the  `Guardfile`.
   * Review set of gems(`rspec` and plugins) for testing at the `Gemfile`.
   * Review set of gems(`rubocop` and styleguide plugins) for code quality checks and linting
   * Staging and production designed to work behind of load balancing proxy as `haproxy` or the reverse proxy, such as `nginx`. Do not forgot to configure required path mappings and streaming channels.
 * Remove example applications and copy contents of yours:
-  * Copy ruby backend application to the `./apps/backend/`
-  * Copy node.js application to the `./apps/frontend/`
+  * Copy ruby backend application to the `/contexts/backend/app`
+  * Copy node.js application to the `/contexts/frontend/app`
+  * At the image build time container OS user will be switched to 1000:1000(or other non root user), so ownership of files will be changed to this user too.
+* Review entrypoint and other system scripts at the `/contexts/<context_name>/sbin`
+  * These scripts will be copied to the `/usr/local/sbin/` with executable permissions and ownership of root
 
 ### 4.3. Define environment variables
 Rename `<environment>.env.example` files as `<environment>.env` at directories:
-  * `./env/frontend/`
-  * `./env/backend/`
-  * `./env/databases/`
+  * `/env/frontend/`
+  * `/env/backend/`
+  * `/env/databases/`
 
-Change default values of environment variables for docker services, explanations are in next sections. Also addict it with your values.
+Change default values of environment variables for docker services, explanations are in the next sections. Also complete it using your custom variables.
 
 #### 4.3.1. Databases
 
 > * Environment files of databases are common with backend services. Be carefull  when sharing it with frontend.
 > * Redis connection string better to define separately at the `frontend.env`. Review securing of redis database.
 ##### 4.3.1.1 PostgreSQL
-  Initial database superuser credentials. Credentials for application database user will be created in the appilcation image build time.
-  >`./env/databases/postgres.env`
+  Initial database superuser credentials. Application database user/role will be created or altered(if exists) creates at the application boot time as one of first steps of the entrypoint script.
+  >`/env/databases/postgres.env`
   ```sh
   POSTGRES_USER=postgres # Default postgress superuser
   POSTGRES_DB=postgres # Default system database name
   POSTGRES_PASSWORD=some_secure_secret_password # Secure superuser password
   ```
 ##### 4.3.1.2 Redis
-  >`./env/databases/redis.env`
+  >`/env/databases/redis.env`
   ```
   ```
 #### 4.3.2. Frontend
-  >`./env/frontend/development.env`
+  >`/env/frontend/development.env`
   ```
   ```
-  >`./env/frontend/test.env`
+  >`/env/frontend/test.env`
   ```
   ```
-  >`./env/frontend/staging.env`
+  >`/env/frontend/staging.env`
   ```
   ```
-  >`./env/frontend/production.env`
+  >`/env/frontend/production.env`
   ```
   ```
 
 #### 4.3.3. Backend
-  >`./env/backend/development.env`
+  >`/env/backend/development.env`
   ```
   ```
-  >`./env/backend/test.env`
+  >`/env/backend/test.env`
   ```
   ```
-  >`./env/backend/staging.env`
+  >`/env/backend/staging.env`
   ```
   ```
-  >`./env/backend/production.env`
+  >`/env/backend/production.env`
   ```
   ```
 
 ### 4.4. Review and complete build actions at Dockerfiles of services
 Fill out Docker files with required actions to build application
 
-Dockerfiles are here `./dockerfiles/<app_part_name>.Dockerfile`
+Dockerfiles are here `/docker-appliance/dockerfiles/<context_name>.Dockerfile`
 
-> To exclude some files from docker processing scope use dockerignore files: `./dockerfiles/<app_part_name>.Dockerfile.dockerignore`
+> To exclude some files from docker processing scope use dockerignore files: `/docker-appliance/dockerfiles/<context_name>.Dockerfile.dockerignore`
 
->Don't forget that you are working inside of docker context and working directory moved to the application directory.
+> Don't forget, you are working inside of docker context and working directory moved to directory of this context.
 
 ### 4.5. Complete startup actions at entrypoint scripts
 Replace or create entrypoint scripts of the container.
 > Entrypoint scripts of applications present at the next path:\
-`./sbin/<service_name>_<stage_name>`
+`/contexts/<context_name>/sbin/<service_name>_<environment_name>`
 
 ### 4.6. Configure network port mapping of services
-Path to service files is `./services/<environment_name>.yml`
+Path to service files is `/docker-appliance/services/<environment_name>.yml`
 
 As example, exposing(mapping) TCP port of backend server from 3000 to 80 of the host, at the file\
-`docker-appliance/services/development.yml`:
+`/docker-appliance/services/development.yml`:
 
 ```YAML
 ---
@@ -211,10 +228,10 @@ services:
     env_file:
       - ../env/frontend/development.env
     build:
-      context: ../../apps/frontend/
-      dockerfile: ../dockerfiles/frontend.Dockerfile
+      context: ../../contexts/frontend
+      dockerfile: ../docker-appliance/dockerfiles/frontend.Dockerfile
       target: development
-    entrypoint: ["sbin", "frontend_dev"]
+    entrypoint: "/usr/local/entrypoint"
     networks:
       - dev
   backend:
@@ -226,10 +243,10 @@ services:
     ports:
       - 80:3000 # <-- EXPOSED PORTS
     build:
-      context: ../../apps/backend/
-      dockerfile: ../dockerfiles/backend.Dockerfile
+      context: ../../contexts/backend/
+      dockerfile: ../docker-appliance/dockerfiles/backend.Dockerfile
       target: development
-    entrypoint: ["sbin", "backend_dev"]
+    entrypoint: "/usr/local/entrypoint"
     networks:
       - dev
 
@@ -246,10 +263,45 @@ If you don't want to set env var each build time, then execute:\
 _(replace `~/.bashrc` with name of rc file of your shell interpretter)_ \
 Next, reload terminal session.
 
-## 6. Running
+## 6. Running services
 
-Execute. Production services will not start, but may be rebuilt from staging image.
+> Execute. Production services will not start, but may be rebuilt from staging image.
 
+
+> Running whole stack
 ```
 $ docker-compose up
 ```
+
+### 6.1 Running development environment
+> Running only development services
+```
+$ docker-compose up backend-dev frontend-dev
+```
+
+### 6.2 Execution tests and monitoring
+
+> Execute test runs and attach consoles
+```
+$ docker-compose up backend-test frontend-test
+```
+
+> At the first console window:
+```
+$ docker-compose attach backend-test
+```
+
+> At the second console window:
+```
+$ docker-compose attach backend-test
+```
+
+## 7. Deliver images to the docker registry
+
+## 8. Deployment
+
+### 8.1. Docker Swarm Cluster
+
+### 8.2. Kubernetes Cluster
+
+### 8.3. Docker Swarm Cluster in the Kubernetes mode
