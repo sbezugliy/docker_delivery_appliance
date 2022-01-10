@@ -2,57 +2,57 @@
 
 Contents\
 
-[1. Overview](#overview)
+[1. Overview](#1-overview)
 
-[1.1 Environment](#1.1.-environment)
+[1.1 Environment](#11-environment)
 
-[1.2. Image runtime environments](#image-runtime-environments)
+[1.2. Image runtime environments](#12-image-runtime-environments)
 
-[1.2.1 Backend images](#backend-images)
+[1.2.1 Backend images](#121-backend-images)
 
-[1.2.2 Frontend images](#frontend-images)
+[1.2.2 Frontend images](#122-frontend-images)
 
-[2. Requirements](#requirements)
+[2. Requirements](#2-requirements)
 
-[3. Installation](#installation)
+[3. Installation](#3-installation)
 
-[4. Configuration](#configuration)
+[4. Configuration](#4-configuration)
 
-[4.1. Customization of services](#customization_of_services)
+[4.1. Customization of services](#41-customization-of-services)
 
-[4.2. Copy files of application services](#copy_files_of_application_services)
+[4.2. Copy files of application services](#42-copy-files-of-application-services)
 
-[4.3. Define environment variables](#define_environment_variables)
+[4.3. Define environment variables](#43-define-environment-variables)
 
-[4.3.1. Databases](#databases)
+[4.3.1. Databases](#431-databases)
 
-[4.3.1.1 PostgreSQL](#postgresql)
+[4.3.1.1 PostgreSQL](#4311-postgresql)
 
-[4.3.1.2 Redis](#redis)
+[4.3.1.2 Redis](#4312-redis)
 
-[4.3.2. Frontend](#frontend)
+[4.3.2. Frontend](#432-frontend)
 
-[4.3.3. Backend](#backend)
+[4.3.3. Backend](#433-backend)
 
-[4.4. Complete Dockerfiles](#complete-dockerfiles)
+[4.4. Complete Dockerfiles](#44-complete-dockerfiles)
 
-[4.5. Complete startup action at entrypoint scripts](#complete-startup-actions-at-entrypoint-scripts)
+[4.5. Complete startup action at entrypoint scripts](#45-complete-startup-actions-at-entrypoint-scripts)
 
-[4.6. Configure network port mapping of services](#complete-network-port-mapping-of-services)
+[4.6. Configure network port mapping of services](#46-complete-network-port-mapping-of-services)
 
-[5. Build images and service stack](#build_images_and_service_stack)
+[5. Build images and service stack](#5-build_images_and_service_stack)
 
-[6. Running services](#running_services)
+[6. Running services](#6-running_services)
 
-[7. Deliver images to the docker registry](#deliver-images-to-the-docker-registry)
+[7. Deliver images to the docker registry](#7-deliver-images-to-the-docker-registry)
 
-[8. Deployment](#deployment)
+[8. Deployment](#8-deployment)
 
-[8.1. Docker Swarm Cluster](#docker-swarm-cluster)
+[8.1. Docker Swarm Cluster](#81-docker-swarm-cluster)
 
-[8.2. Kubernetes Cluster](#kubernetes-cluster)
+[8.2. Kubernetes Cluster](#82-kubernetes-cluster)
 
-[8.3. Docker Swarm Cluster in the Kubernetes mode](#docker-swarm-cluster-in-the-kubernetes-mode)
+[8.3. Docker Swarm Cluster in the Kubernetes mode](#83-docker-swarm-cluster-in-the-kubernetes-mode)
 
 ## 1. Overview
 ### 1.1 Environment
