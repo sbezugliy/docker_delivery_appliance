@@ -3,7 +3,7 @@ services:
   redis:
     image: redis:alpine
     env_file:
-      - ../env/databases/redis.env
+      - ../../env/databases/redis.env
     networks:
       - dev
       - test
@@ -12,7 +12,7 @@ services:
   postgres:
     image: postgres:14.1-alpine
     env_file:
-      - ../env/databases/postgres.env
+      - ../../env/databases/postgres.env
     volumes:
       - ../../data/postgres:/var/lib/postgresql/data
     networks:

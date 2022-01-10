@@ -84,8 +84,9 @@ FROM build_base AS production
 > Similar scenario implemented for frontend image at `./docker-appliance/dockerfiles/frontend.Dockerfile
 
 ## 2. Requirements
-- docker
-- docker-compose
+- Docker
+- Docker-compose
+- Docker BuildKit
 
 ## 3. Installation
 
@@ -234,7 +235,18 @@ services:
 
 ```
 
-## 5. Running
+## 5. Build images and service stack
+
+```
+$ DOCKER_BUILDKIT=1 docker-compose build
+```
+> Only for development or QA machine. \
+If you don't want to set env var each build time, then execute:\
+`echo "export DOCKER_BUILDKIT=1" >> ~/.bashrc`\
+_(replace `~/.bashrc` with name of rc file of your shell interpretter)_ \
+Next, reload terminal session.
+
+## 6. Running
 
 Execute. Production services will not start, but may be rebuilt from staging image.
 

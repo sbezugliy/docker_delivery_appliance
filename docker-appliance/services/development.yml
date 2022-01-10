@@ -3,24 +3,24 @@ services:
   frontend:
     image: frontend:dev
     env_file:
-      - ../env/frontend/development.env
+      - ../../env/frontend/development.env
     build:
-      context: ../../apps/frontend/
-      dockerfile: ../dockerfiles/frontend.Dockerfile
+      context: ../../contexts/frontend
+      dockerfile: ../../docker-appliance/dockerfiles/frontend.Dockerfile
       target: development
-    entrypoint: ["sbin", "frontend_dev"]
+    entrypoint: "/usr/local/sbin/entrypoint"
     networks:
       - dev
   backend:
     image: backend:dev
     env_file:
-      - ../env/backend/development.env
-      - ../env/databases/postgres.env
-      - ../env/databases/redis.env
+      - ../../env/backend/development.env
+      - ../../env/databases/postgres.env
+      - ../../env/databases/redis.env
     build:
-      context: ../../apps/backend/
-      dockerfile: ../dockerfiles/backend.Dockerfile
+      context: ../../contexts/backend
+      dockerfile: ../../docker-appliance/dockerfiles/backend.Dockerfile
       target: development
-    entrypoint: ["sbin", "backend_dev"]
+    entrypoint: "/usr/local/sbin/entrypoint"
     networks:
       - dev

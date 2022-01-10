@@ -3,10 +3,10 @@ services:
   frontend:
     image: frontend:latest
     env_file:
-      - ../env/frontend/production.env
+      - ../../env/frontend/production.env
     build:
-      context: ../../apps/frontend/
-      dockerfile: ../dockerfiles/frontend.Dockerfile
+      context: ../../contexts/frontend/
+      dockerfile: ../../docker-appliance/dockerfiles/frontend.Dockerfile
       target: production
     entrypoint: ["sbin", "frontend_prod"]
     networks:
@@ -14,12 +14,12 @@ services:
   backend:
     image: backend:latest
     env_file:
-      - ../env/backend/production.env
-      - ../env/databases/postgres.env
-      - ../env/databases/redis.env
+      - ../../env/backend/production.env
+      - ../../env/databases/postgres.env
+      - ../../env/databases/redis.env
     build:
-      context: ../../apps/backend/
-      dockerfile: ../dockerfiles/backend.Dockerfile
+      context: ../../contexts/backend/
+      dockerfile: ../../docker-appliance/dockerfiles/backend.Dockerfile
       target: production
     entrypoint: ["sbin", "backend_prod"]
     networks:

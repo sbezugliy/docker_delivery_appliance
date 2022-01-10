@@ -3,10 +3,10 @@ services:
   frontend:
     image: frontend:test
     env_file:
-      - ../env/frontend/test.env
+      - ../../env/frontend/test.env
     build:
-      context: ../../apps/frontend/
-      dockerfile: ../dockerfiles/frontend.Dockerfile
+      context: ../../contexts/frontend/
+      dockerfile: ../../docker-appliance/dockerfiles/frontend.Dockerfile
       target: test
     entrypoint: ["sbin", "frontend_test"]
     networks:
@@ -14,12 +14,12 @@ services:
   backend:
     image: backend:test
     env_file:
-      - ../env/backend/test.env
-      - ../env/databases/postgres.env
-      - ../env/databases/redis.env
+      - ../../env/backend/test.env
+      - ../../env/databases/postgres.env
+      - ../../env/databases/redis.env
     build:
-      context: ../../apps/backend/
-      dockerfile: ../dockerfiles/backend.Dockerfile
+      context: ../../contexts/backend/
+      dockerfile: ../../docker-appliance/dockerfiles/backend.Dockerfile
       target: test
     entrypoint: ["sbin", "backend_test"]
     networks:
