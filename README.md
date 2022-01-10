@@ -62,7 +62,7 @@ Current appliance provides docker-compose service stack for ruby 3.10 and node.j
 |------------------|-------------|------------|------------|--------------|
 | **Behavior:**    | _Runnable_  | _Runnable_ | _Runnable_ | _Deployable_ |
 | **Environment:** | Development | Test       | Staging    | Production   |
-| **Image tag**    | **dev**     | **test**   | **stage**  | **latest**   |
+| **Image tag:**    | **dev**     | **test**   | **stage**  | **latest**   |
 
 > Appliance builds image and service for **every** stage. As example if thereis application of two parts: **backend** and **frontend**, then as result we are will have:
   * 8 sets of application images, containers and services
