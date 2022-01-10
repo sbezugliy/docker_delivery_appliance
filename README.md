@@ -1,7 +1,5 @@
 # Docker Delivery-ready appliance
 
-Contents\
-
 [1. Overview](#1-overview)
 
 [1.1 Environment](#11-environment)
